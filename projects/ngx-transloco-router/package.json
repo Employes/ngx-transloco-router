@@ -1,0 +1,17 @@
+{
+  "name": "@employes/ngx-transloco-router",
+  "version": "1.0.0",
+  "homepage": "https://github.com/employes/ngx-transloco-router#readme",
+  "license": "MIT",
+  "author": {
+    "name": "David Gilson & Jurien Hamaker",
+    "email": "jurien@kings-dev.io",
+    "url": "https://github.com/gilsdav | https://jurien.dev"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=8.0.0",
+    "@angular/core": ">=8.0.0",
+    "@angular/router": ">=8.0.0",
+    "@ngneat/transloco": ">=2.18.2"
+  }
+}
