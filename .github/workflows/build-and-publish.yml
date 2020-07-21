@@ -49,5 +49,5 @@ jobs:
       - name: Publish package
         uses: JS-DevTools/npm-publish@v1
         with:
-          package: ./dist/package.json
+          package: ./build/package.json
           token: ${{ secrets.NPM_TOKEN }}
