@@ -2,7 +2,7 @@
 
 > An implementation of routes localization for Angular.
 
-[![npm version](https://badge.fury.io/js/%40employes%2Fngx-transloco-router.svg)](https://badge.fury.io/js/%40employes%2Fngx-transloco-router) ![Publish](https://github.com/Employes/ngx-transloco-router/workflows/Publish/badge.svg)
+[![npm version](https://badge.fury.io/js/%40employes%2Fngx-transloco-router.svg)](https://badge.fury.io/js/%40employes%2Fngx-transloco-router) ![Build & Publish](https://github.com/Employes/ngx-transloco-router/workflows/Build%20&%20Publish/badge.svg)
 
 **Fork of [@gilsdav/ngx-translate-router](https://github.com/gilsdav/ngx-translate-router).**
 
