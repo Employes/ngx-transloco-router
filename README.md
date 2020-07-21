@@ -5,13 +5,13 @@
 - ngx-transloco-router
   [![npm version](https://badge.fury.io/js/%40employes%2Fngx-transloco-router.svg)](https://badge.fury.io/js/%40employes%2Fngx-transloco-router)
 
-**Fork of [@employes/ngx-transloco-router](https://github.com/gilsdav/ngx-translate-router).**
+**Fork of [@gilsdav/ngx-translate-router](https://github.com/gilsdav/ngx-translate-router).**
 
 **Version to choose :**
 
-| angular version | translate-router | type   |
+| angular version | transloco-router | type   |
 | --------------- | ---------------- | ------ |
-| 8 - 10          | 3.1.0            | active |
+| 8 - 10          | 1.0.0            | active |
 
 > This documentation is for version 1.x.x which requires Angular 9+. If you are migrating from the older version follow [migration guide](https://github.com/Greentube/localize-router/blob/master/MIGRATION_GUIDE.md) to upgrade to latest version.
 
@@ -23,11 +23,8 @@
     - [Http loader](#http-loader)
     - [Manual initialization](#manual-initialization)
     - [Initialization config](#initialization-config)
-  - [Server side](#server-side)
-    - [Deal with initialNavigation](#deal-with-initialNavigation)
   - [How it works](#how-it-works)
     - [Excluding routes](#excluding-routes)
-    - [ngx-translate integration](#ngx-translate-integration)
     - [Path discrimination](#path-discrimination)
     - [WildCard path](#wildcard-path)
     - [Matcher params translation](#matcher-params-translation)
@@ -92,7 +89,7 @@ Apart from providing routes which are mandatory, and parser loader you can provi
 ### How it works
 
 `@employes/ngx-transloco-router` intercepts Router initialization and translates each `path` and `redirectTo` path of Routes.
-The translation process is done with [ngx-translate](https://github.com/ngx-translate/core). In order to separate
+The translation process is done with [@ngneat/transloco](https://github.com/ngneat/transloco). In order to separate
 router translations from normal application translations we use `prefix`. Default value for prefix is `ROUTES.`. Finally, in order to avoid accidentally translating a URL segment that should not be translated, you can optionally use `escapePrefix` so the prefix gets stripped and the segment doesn't get translated. Default `escapePrefix` is unset.
 
 ```
@@ -123,7 +120,7 @@ If no language is provided in the url path, application uses:
 
 Make sure you therefore place most common language (e.g. 'en') as a first string in the array of locales.
 
-> Note that `ngx-translate-router` does not redirect routes like `my/route` to translated ones e.g. `en/my/route`. All routes are prepended by currently selected language so route without language is unknown to Router.
+> Note that `ngx-transloco-router` does not redirect routes like `my/route` to translated ones e.g. `en/my/route`. All routes are prepended by currently selected language so route without language is unknown to Router.
 
 #### Excluding routes
 
@@ -145,30 +142,10 @@ let routes = [
 Note that this flag should only be set on root routes. By excluding root route, all its sub routes are automatically excluded.
 Setting this flag on sub route has no effect as parent route would already have or have not language prefix.
 
-#### ngx-translate integration
-
-`LocalizeRouter` depends on `ngx-translate` core service and automatically initializes it with selected locales.
-Following code is run on `LocalizeParser` init:
-
-```ts
-this.translate.setDefaultLang(
-  cachedLanguage || languageOfBrowser || firstLanguageFromConfig
-);
-// ...
-this.translate.use(
-  languageFromUrl ||
-    cachedLanguage ||
-    languageOfBrowser ||
-    firstLanguageFromConfig
-);
-```
-
-Both `languageOfBrowser` and `languageFromUrl` are cross-checked with locales from config.
-
 #### Path discrimination
 
 Do you use same path to load multiple lazy-loaded modules and you have wrong component tree ?
-`discriminantPathKey` will help ngx-translate-router to generate good component tree.
+`discriminantPathKey` will help ngx-transloco-router to generate good component tree.
 
 ```ts
   {
@@ -215,73 +192,6 @@ This limitation is because we can not determine the language from a wrong url.
   component: NotFoundComponent
 }
 ```
-
-#### Matcher params translation
-
-##### Configure routes
-
-In case you want to translate some params of matcher, `localizeMatcher` provides you the way to do it through a function per each param. Make sure that the key is the same as the one used in the navigate path (example: if the function returns "map", it must be contained in the not localized path: `[routerLink]="['/matcher', 'aaa', 'map'] | localize"`) otherwise you will not be able to use `routerLinkActiveOptions`.
-
-Example:
-
-```ts
-{
-  path: 'matcher',
-  children: [
-    {
-      matcher: detailMatcher,
-      loadChildren: () => import('./matcher/matcher-detail/matcher-detail.module').then(mod => mod.MatcherDetailModule)
-    },
-    {
-      matcher: baseMatcher,
-      loadChildren: () => import('./matcher/matcher.module').then(mod => mod.MatcherModule),
-      data: {
-        localizeMatcher: {
-          params: {
-            mapPage: shouldTranslateMap
-          }
-        }
-      }
-    }
-  ]
-}
-
-...
-
-export function shouldTranslateMap(param: string): string {
-  if (isNaN(+param)) {
-    return 'map';
-  }
-  return null;
-}
-```
-
-The output of the function should be `falsy` if the param must not be translated or should return the `key` (without prefix) you want to use when translating if you want to translate the param.
-
-Notice that any function that you use in `localizeMatcher` must be exported to be compatible with AOT.
-
-##### Small changes to your matcher
-
-We work with `UrlSegment` to split URL into "params" in basic `UrlMatchResult` but there is not enough information to apply the translations.
-
-You must use the `LocalizedMatcherUrlSegment` type to more strongly associate a segment with a parameter. It contains only the `localizedParamName` attribute in addition to basic UrlSegment. Set this attribute before adding the segment into `consumed` and`posParams`.
-
-```ts
-const result: UrlMatchResult = {
-  consumed: [],
-  posParams: { }
-};
-
-...
-
-(segment as LocalizedMatcherUrlSegment).localizedParamName = name;
-result.consumed.push(segment);
-result.posParams[name] = segment;
-```
-
-##### Matcher params translated without localizeMatcher issue
-
-If the URL is accidentally translated from a language to another which creates an inconsistent state you have to enable `escapePrefix` mechanism. (example: `escapePrefix: '!'`)
 
 ### Pipe
 
