@@ -459,16 +459,19 @@ export abstract class LocalizeParser {
 
       let fullKey;
       let res;
+      let keyWithScope = this.settings.scope?.length ? this.settings.scope : "";
+
       for (let prefix of prefixes) {
         fullKey = prefix + key;
+        keyWithScope = `${keyWithScope}.${fullKey}`;
         res = this.translate.translate(fullKey, {}, this.settings.scope);
 
-        if (res.length && res !== fullKey) {
+        if (res.length && res !== keyWithScope) {
           break;
         }
       }
 
-      return res && fullKey && res !== fullKey ? res : key;
+      return res.length && keyWithScope && res !== keyWithScope ? res : key;
     }
   }
 
