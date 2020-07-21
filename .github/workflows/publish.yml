@@ -35,7 +35,7 @@ jobs:
       - name: Create build artifact
         uses: actions/upload-artifact@v1
         with:
-          name: homework
+          name: build
           path: dist
   publish:
     name: Publish
