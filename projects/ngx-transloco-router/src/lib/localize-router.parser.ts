@@ -8,7 +8,7 @@ import {
 } from "./localize-router.config";
 import { Inject } from "@angular/core";
 import { HttpParams } from "@angular/common/http";
-import { filter, takeUntil } from "rxjs/operators";
+import { filter, takeUntil, take } from "rxjs/operators";
 
 const COOKIE_EXPIRY = 30; // 1 month
 
@@ -162,29 +162,28 @@ export abstract class LocalizeParser {
       const scopedLanguage =
         (this.settings.scope?.length ? this.settings.scope + "/" : "") +
         language;
-      const loadRef = this.translate.load(scopedLanguage).subscribe(() => {
-        this._loaded = true;
-        this.currentLang = language;
+      this.translate
+        .load(scopedLanguage)
+        .pipe(take(1))
+        .subscribe(() => {
+          this._loaded = true;
+          this.currentLang = language;
 
-        if (this._languageRoute) {
           if (this._languageRoute) {
-            this._translateRouteTree(this._languageRoute.children);
+            if (this._languageRoute) {
+              this._translateRouteTree(this._languageRoute.children);
+            }
+            // if there is wildcard route
+            if (this._wildcardRoute && this._wildcardRoute.redirectTo) {
+              this._translateProperty(this._wildcardRoute, "redirectTo", true);
+            }
+          } else {
+            this._translateRouteTree(this.routes);
           }
-          // if there is wildcard route
-          if (this._wildcardRoute && this._wildcardRoute.redirectTo) {
-            this._translateProperty(this._wildcardRoute, "redirectTo", true);
-          }
-        } else {
-          this._translateRouteTree(this.routes);
-        }
 
-        if (!loadRef.closed) {
-          loadRef.unsubscribe();
-        }
-
-        observer.next(void 0);
-        observer.complete();
-      });
+          observer.next(void 0);
+          observer.complete();
+        });
     });
   }
 
