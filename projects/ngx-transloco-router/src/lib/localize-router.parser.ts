@@ -83,7 +83,11 @@ export abstract class LocalizeParser {
         browserLang
       );
     } else {
-      this.defaultLang = this._cachedLang || browserLang || this.locales[0];
+      this.defaultLang =
+        this._cachedLang ||
+        this.translate.getActiveLang() ||
+        browserLang ||
+        this.locales[0];
     }
     selectedLanguage = locationLang || this.defaultLang;
     this.translate.setDefaultLang(this.defaultLang);
